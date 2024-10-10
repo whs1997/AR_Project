@@ -13,9 +13,10 @@ public class ImageTracker : MonoBehaviour
     private Dictionary<string, GameObject> _prefabDic = new Dictionary<string, GameObject>(); // 오브젝트를 이름으로 받아올 딕셔너리
 
     private List<ARTrackedImage> _trackedImg = new List<ARTrackedImage>(); // 트래킹하고있는 이미지
-    private List<float> _trackedTime = new List<float>(); // 트래킹하고 있는 이미지의 타이머
+    private List<float> _trackedTime = new List<float>(); // 트래킹하고있는 이미지의 타이머
+    private List<AnimationController> _animators = new List<AnimationController>(); // 트래킹하고있는 이미지의 AnimatorController
 
-    public float timer; // 이미지를 트래킹하지 못할때 증가할 타이머
+    public float timer; // 이미지를 트래킹하지 못할때 증가할 타이머    
 
     private void Awake()
     {
@@ -30,41 +31,7 @@ public class ImageTracker : MonoBehaviour
 
     private void Update()
     {
-        // ImageChanged의 remove 상태
-        if (_trackedImg.Count > 0) // 이미지를 트래킹하고 있다면
-        {
-            List<ARTrackedImage> tNumList = new List<ARTrackedImage>(); // 타이머가 넘어가면 임시로 저장할 리스트
-
-            for (int i = 0; i < _trackedImg.Count; i++)
-            {
-                // 트래킹 상태가 Limited 이면 (이미지를 못찾고있으면)
-                if (_trackedImg[i].trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Limited)
-                {
-                    if (_trackedTime[i] > timer) // 트래킹 타이머가 지정된 타이머보다 커지면 제거
-                    {
-                        string name = _trackedImg[i].referenceImage.name; // 트래킹하고있는 이미지의 이름을 받아옴
-                        GameObject tObj = _prefabDic[name]; // 오브젝트와 연동해서
-                        tObj.SetActive(false); // 오브젝트를 비활성화
-                        tNumList.Add(_trackedImg[i]); // 임시 리스트에 추가
-                    }
-                    else
-                    {
-                        _trackedTime[i] += Time.deltaTime; // 트래킹하고있는 이미지의 타이머 시간 증가
-                        Debug.Log($"{_trackedImg[i]} 이미지의 타이머 _trackedTimer {_trackedTime[i]}, timer {timer}가 되면 제거,");
-                    }
-                }
-            }
-            
-            if (tNumList.Count > 0)
-            {
-                for (int i = 0; i < tNumList.Count; i++)
-                {
-                    int num = _trackedImg.IndexOf(tNumList[i]); // 임시 리스트에 추가된 trackedImg의 인덱스 값 받아옴
-                    _trackedImg.Remove(_trackedImg[num]); // 오브젝트를 비활성화하고 trackedImg의 리스트에서도 삭제
-                    _trackedTime.Remove(_trackedTime[num]); // 오브젝트를 비활성화하고 trackedTime의 리스트에서도 삭제
-                }
-            }
-        }
+        ImageRemoved();
     }
     
     private void OnEnable()
@@ -85,6 +52,10 @@ public class ImageTracker : MonoBehaviour
             {
                 _trackedImg.Add(trackedImage); // 이미지를 추가하고
                 _trackedTime.Add(0); // 트래킹 타이머를 0으로 추가해줌
+
+                string name = trackedImage.referenceImage.name; // 트래킹한 이미지의 이름 받아오기
+                GameObject tObj = _prefabDic[name]; // 이름이 같은 오브젝트의 animator 받아오기
+                _animators.Add(tObj.GetComponent<AnimationController>()); 
             }
         }
         
@@ -94,6 +65,10 @@ public class ImageTracker : MonoBehaviour
             {
                 _trackedImg.Add(trackedImage);
                 _trackedTime.Add(0);
+
+                string name = trackedImage.referenceImage.name; // 트래킹한 이미지의 이름 받아오기
+                GameObject tObj = _prefabDic[name]; // 이름이 같은 오브젝트의 animator 받아오기
+                _animators.Add(tObj.GetComponent<AnimationController>());
             }
             else
             {
@@ -112,6 +87,45 @@ public class ImageTracker : MonoBehaviour
             UpdateImage(trackedImage); // 이미지 위치 갱신
         }
     }
+
+    private void ImageRemoved()
+    {
+        // ImageChanged의 remove 상태
+        if (_trackedImg.Count > 0) // 이미지를 트래킹하고 있다면
+        {
+            List<ARTrackedImage> tNumList = new List<ARTrackedImage>(); // 타이머가 넘어가면 임시로 저장할 리스트
+
+            for (int i = 0; i < _trackedImg.Count; i++)
+            {
+                // 트래킹 상태가 Limited 이면 (이미지를 못찾고있으면)
+                if (_trackedImg[i].trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Limited)
+                {
+                    if (_trackedTime[i] > timer) // 트래킹 타이머가 지정된 타이머보다 커지면 제거
+                    {
+                        string name = _trackedImg[i].referenceImage.name; // 트래킹하고있는 이미지의 이름을 받아옴
+                        GameObject tObj = _prefabDic[name]; // 오브젝트와 연동해서
+                        tObj.SetActive(false); // 오브젝트를 비활성화
+                        _animators.RemoveAt(i); // animator도 삭제
+                        tNumList.Add(_trackedImg[i]); // 임시 리스트에 추가
+                    }
+                    else
+                    {
+                        _trackedTime[i] += Time.deltaTime; // 트래킹하고있는 이미지의 타이머 시간 증가
+                    }
+                }
+            }
+
+            if (tNumList.Count > 0)
+            {
+                for (int i = 0; i < tNumList.Count; i++)
+                {
+                    int num = _trackedImg.IndexOf(tNumList[i]); // 임시 리스트에 추가된 trackedImg의 인덱스 값 받아옴
+                    _trackedImg.Remove(_trackedImg[num]); // 오브젝트를 비활성화하고 trackedImg의 리스트에서도 삭제
+                    _trackedTime.Remove(_trackedTime[num]); // 오브젝트를 비활성화하고 trackedTime의 리스트에서도 삭제
+                }
+            }
+        }
+    }
     
     private void UpdateImage(ARTrackedImage trackedImage)
     {
@@ -128,8 +142,46 @@ public class ImageTracker : MonoBehaviour
         {
             tObj.transform.position = trackedImage.transform.position;
             tObj.transform.rotation = trackedImage.transform.rotation;
-            Debug.Log($"position ({tObj.transform.position.x}, {tObj.transform.position.y})");
+            // Debug.Log($"position ({tObj.transform.position.x}, {tObj.transform.position.y})");
             tObj.SetActive(true); // 트래킹중인 이미지 위에 위치, 회전을 갱신하고 오브젝트를 띄워줌
+        }
+    }
+
+    public void AttackButtonPressed()
+    {
+        if(_trackedImg.Count > 0) // 트래킹중인 이미지가 있을 때
+        {
+            AnimationController animator = _animators[0]; // 트래킹중인 이미지의 애니메이터
+            Debug.Log("공격!");
+            if(animator != null) // 애니메이터가 있으면
+            {
+                animator.Attack();
+                Debug.Log("공격 애니메이션 재생");
+            }
+        }
+    }
+
+    public void WalkButtonPressed()
+    {
+        if (_trackedImg.Count > 0) // 트래킹중인 이미지가 있을 때
+        {
+            AnimationController animator = _animators[0]; // 트래킹중인 이미지의 애니메이터
+            if (animator != null) // 애니메이터가 있으면
+            {
+                animator.Walk();
+            }
+        }
+    }
+
+    public void JumpButtonPressed()
+    {
+        if (_trackedImg.Count > 0) // 트래킹중인 이미지가 있을 때
+        {
+            AnimationController animator = _animators[0]; // 트래킹중인 이미지의 애니메이터
+            if (animator != null) // 애니메이터가 있으면
+            {
+                animator.Jump();
+            }
         }
     }
 }

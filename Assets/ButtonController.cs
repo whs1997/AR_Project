@@ -19,17 +19,26 @@ public class ButtonController : MonoBehaviour
 
     private void AttackButton()
     {
-        animationController.Attack();
+        if (animationController.IsAnimating()) { }
+        // 애니메이션 진행 중이면 작업 하지않음
+        else
+            animationController.Attack();
     }
 
     private void WalkButton()
     {
-        animationController.Walk();
+        if (animationController.IsAnimating()) { }
+        // 애니메이션 진행 중이면 작업 하지않음
+        else
+            animationController.Walk();
     }
 
     private void JumpButton()
     {
-        animationController.Jump();
+        if (animationController.IsAnimating()) { }
+        // 애니메이션 진행 중이면 작업 하지않음
+        else
+            animationController.Jump();
     }
 }
 

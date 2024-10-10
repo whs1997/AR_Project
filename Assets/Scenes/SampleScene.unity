@@ -589,6 +589,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3817999795432237730, guid: 7baefb163a9ce264eb1086ec8d4c9217, type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     - target: {fileID: 8947233817668131645, guid: 7baefb163a9ce264eb1086ec8d4c9217, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -645,6 +649,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3817999795432237730, guid: 7baefb163a9ce264eb1086ec8d4c9217, type: 3}
   m_PrefabInstance: {fileID: 890136165}
   m_PrefabAsset: {fileID: 0}
+--- !u!135 &890136171
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 890136167}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1092085987
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,8 +746,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MultiImageTracker, Assembly-CSharp
+      - m_Target: {fileID: 117733702}
+        m_TargetAssemblyTypeName: ImageTracker, Assembly-CSharp
         m_MethodName: AttackButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -863,8 +880,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MultiImageTracker, Assembly-CSharp
+      - m_Target: {fileID: 117733702}
+        m_TargetAssemblyTypeName: ImageTracker, Assembly-CSharp
         m_MethodName: WalkButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -1322,6 +1339,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2432662590099679606, guid: 4b9afe8f87e9e944780cc6ac129b237c, type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     - target: {fileID: 7962675806781063144, guid: 4b9afe8f87e9e944780cc6ac129b237c, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1378,6 +1399,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2432662590099679606, guid: 4b9afe8f87e9e944780cc6ac129b237c, type: 3}
   m_PrefabInstance: {fileID: 1865105506}
   m_PrefabAsset: {fileID: 0}
+--- !u!135 &1865105512
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865105508}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2024008193
 GameObject:
   m_ObjectHideFlags: 0
@@ -1462,8 +1496,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MultiImageTracker, Assembly-CSharp
+      - m_Target: {fileID: 117733702}
+        m_TargetAssemblyTypeName: ImageTracker, Assembly-CSharp
         m_MethodName: JumpButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -1527,6 +1561,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2971735509876704676, guid: 6563d06c07e028c41b0984978aa8e5fe, type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     - target: {fileID: 8483685613449825710, guid: 6563d06c07e028c41b0984978aa8e5fe, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -1583,6 +1621,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2971735509876704676, guid: 6563d06c07e028c41b0984978aa8e5fe, type: 3}
   m_PrefabInstance: {fileID: 2763546172489854826}
   m_PrefabAsset: {fileID: 0}
+--- !u!135 &2763546172489854832
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2763546172489854828}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &5563628267229004754
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1642,6 +1693,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5620665574999537534, guid: 3ee621dedb1c528408f02d6263e5fea3, type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ee621dedb1c528408f02d6263e5fea3, type: 3}
 --- !u!4 &5563628267229004755 stripped
@@ -1654,6 +1709,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5620665574999537534, guid: 3ee621dedb1c528408f02d6263e5fea3, type: 3}
   m_PrefabInstance: {fileID: 5563628267229004754}
   m_PrefabAsset: {fileID: 0}
+--- !u!135 &5563628267229004760
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5563628267229004756}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &8154517692049137412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1713,6 +1781,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 586830095937255523, guid: d1ed082fb3b8a3346ba90396fffb2735, type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d1ed082fb3b8a3346ba90396fffb2735, type: 3}
 --- !u!4 &8604673169116519887 stripped
@@ -1725,3 +1797,16 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 586830095937255523, guid: d1ed082fb3b8a3346ba90396fffb2735, type: 3}
   m_PrefabInstance: {fileID: 8154517692049137412}
   m_PrefabAsset: {fileID: 0}
+--- !u!135 &8723046409389156200
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8723046409389156199}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Center: {x: 0, y: 0, z: 0}
