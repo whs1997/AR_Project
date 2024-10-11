@@ -14,9 +14,13 @@ public class ImageTracker : MonoBehaviour
 
     private List<ARTrackedImage> _trackedImg = new List<ARTrackedImage>(); // 트래킹하고있는 이미지
     private List<float> _trackedTime = new List<float>(); // 트래킹하고있는 이미지의 타이머
-    private List<AnimationController> _animators = new List<AnimationController>(); // 트래킹하고있는 이미지의 AnimatorController
+    private List<AnimationController> _animators = new List<AnimationController>(); // 트래킹하고있는 이미지의 Animator
 
     public float timer; // 이미지를 트래킹하지 못할때 증가할 타이머    
+
+    private bool isJumping = false; // 점프 상태일땐 위치 갱신을 잠시 멈춤
+
+    [SerializeField] GameObject buttons;
 
     private void Awake()
     {
@@ -24,14 +28,24 @@ public class ImageTracker : MonoBehaviour
         {
             string tName = obj.name;
 
-            _prefabDic.Add(tName, obj); // 딕셔너리에 오브젝트의 이름을 키값으로 받아옴
+            _prefabDic.Add(tName, obj); // 시작할 때 딕셔너리에 오브젝트의 이름을 키값으로 받아옴
             Debug.Log($"{tName} 이름의 오브젝트 준비 완료");
         } 
     }
 
     private void Update()
     {
-        ImageRemoved();
+        ImageRemoved(); // 트래킹하지 못할 때 프리팹 비활성화
+
+        if(_trackedImg.Count > 0)
+        {
+            buttons.SetActive(true); // 트래킹 중일때만 버튼UI 보기
+        }
+        else
+        {
+            buttons.SetActive(false);
+        }
+
     }
     
     private void OnEnable()
@@ -53,9 +67,10 @@ public class ImageTracker : MonoBehaviour
                 _trackedImg.Add(trackedImage); // 이미지를 추가하고
                 _trackedTime.Add(0); // 트래킹 타이머를 0으로 추가해줌
 
-                string name = trackedImage.referenceImage.name; // 트래킹한 이미지의 이름 받아오기
-                GameObject tObj = _prefabDic[name]; // 이름이 같은 오브젝트의 animator 받아오기
-                _animators.Add(tObj.GetComponent<AnimationController>()); 
+                string name = trackedImage.referenceImage.name; // 트래킹한 이미지라이브러리의 이름 받아오기
+                GameObject tObj = _prefabDic[name]; // 이름이 같은 오브젝트 tObj
+                _animators.Add(tObj.GetComponent<AnimationController>()); // 오브젝트의 animator 받아오기
+                Debug.Log($"{name} 오브젝트 트래킹 시작");
             }
         }
         
@@ -66,21 +81,22 @@ public class ImageTracker : MonoBehaviour
                 _trackedImg.Add(trackedImage);
                 _trackedTime.Add(0);
 
-                string name = trackedImage.referenceImage.name; // 트래킹한 이미지의 이름 받아오기
-                GameObject tObj = _prefabDic[name]; // 이름이 같은 오브젝트의 animator 받아오기
-                _animators.Add(tObj.GetComponent<AnimationController>());
+                string name = trackedImage.referenceImage.name; // 트래킹한 이미지라이브러리의 이름 받아오기
+                GameObject tObj = _prefabDic[name]; // 이름이 같은 오브젝트 tObj
+                _animators.Add(tObj.GetComponent<AnimationController>()); // 오브젝트의 animator 받아오기
             }
             else
             {
                 int num = _trackedImg.IndexOf(trackedImage); // 트래킹하고있는 이미지의 인덱스 
 
+                // 현재 트래킹 중이던 이미지를 못찾고있는 상태이면
                 if (_trackedImg[num].trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Limited)
                 {
                     // Limited 상태이면 갱신하지않음
                 }
                 else
                 {
-                    _trackedTime[num] = 0; // Limited 상태가 아닐때 트래킹 타이머를 0으로 만듬
+                    _trackedTime[num] = 0; // 잘 트래킹하고있으면 트래킹 타이머를 0으로 리셋
                 }
             }
 
@@ -122,41 +138,44 @@ public class ImageTracker : MonoBehaviour
                     int num = _trackedImg.IndexOf(tNumList[i]); // 임시 리스트에 추가된 trackedImg의 인덱스 값 받아옴
                     _trackedImg.Remove(_trackedImg[num]); // 오브젝트를 비활성화하고 trackedImg의 리스트에서도 삭제
                     _trackedTime.Remove(_trackedTime[num]); // 오브젝트를 비활성화하고 trackedTime의 리스트에서도 삭제
+                    Debug.Log($"{num} 오브젝트 비활성화됨 ");
                 }
             }
         }
     }
     
-    private void UpdateImage(ARTrackedImage trackedImage)
+    private void UpdateImage(ARTrackedImage trackedImage) // 이미지 위치 갱신
     {
         int num = _trackedImg.IndexOf(trackedImage); // 트래킹하고있는 이미지의 인덱스 
-        string name = trackedImage.referenceImage.name; // 레퍼런스 이미지 라이브러리의 이름을 받아옴
-        GameObject tObj = _prefabDic[name]; // 트래킹하고 있는 이미지의 이름으로 프리팹을 띄움
+        string name = trackedImage.referenceImage.name; // 이미지 라이브러리의 이름을 받아옴
+        GameObject tObj = _prefabDic[name]; // 트래킹하고 있는 이미지의 이름을 가진 프리팹
 
-        // Limited 상태가 아닐때 위치 갱신, 활성화
+        // Limited 상태가 아닐때만 위치 갱신, 활성화
         if (_trackedImg[num].trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Limited)
         {
             // Limited 상태이면 갱신하지 않음
         }
         else
         {
-            tObj.transform.position = trackedImage.transform.position;
-            tObj.transform.rotation = trackedImage.transform.rotation;
-            // Debug.Log($"position ({tObj.transform.position.x}, {tObj.transform.position.y})");
-            tObj.SetActive(true); // 트래킹중인 이미지 위에 위치, 회전을 갱신하고 오브젝트를 띄워줌
+            if (!isJumping) // 캐릭터가 점프 중이 아닐때 위치 갱신
+            {
+                tObj.transform.position = trackedImage.transform.position;
+                tObj.transform.rotation = trackedImage.transform.rotation;               
+                tObj.SetActive(true); // 트래킹중인 이미지 위에 위치, 회전을 갱신하고 오브젝트를 띄워줌
+            }
         }
     }
+
+
 
     public void AttackButtonPressed()
     {
         if(_trackedImg.Count > 0) // 트래킹중인 이미지가 있을 때
         {
             AnimationController animator = _animators[0]; // 트래킹중인 이미지의 애니메이터
-            Debug.Log("공격!");
             if(animator != null) // 애니메이터가 있으면
             {
                 animator.Attack();
-                Debug.Log("공격 애니메이션 재생");
             }
         }
     }
@@ -180,8 +199,15 @@ public class ImageTracker : MonoBehaviour
             AnimationController animator = _animators[0]; // 트래킹중인 이미지의 애니메이터
             if (animator != null) // 애니메이터가 있으면
             {
-                animator.Jump();
+                GameObject trackingObj = _prefabDic[_trackedImg[0].referenceImage.name]; // 현재 트래킹중인 오브젝트
+                animator.Jump(trackingObj.transform); // 오브젝트의 위치를 Jump를 받아와 이동시킴
+                isJumping = true; // isJumping일땐 위치 갱신 잠시 멈춤
             }
         }
+    }
+
+    public void JumpEnd()
+    {
+        isJumping = false; // AnimationController에서 Jump가 끝날때 호출해 isJumping 상태를 바꿈
     }
 }
