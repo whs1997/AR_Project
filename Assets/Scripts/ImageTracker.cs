@@ -6,21 +6,21 @@ using UnityEngine.XR.ARFoundation;
 
 public class ImageTracker : MonoBehaviour
 {
-
-    public ARTrackedImageManager trackedImageManager;
+    public ARTrackedImageManager trackedImageManager; // AR 세션의 이미지 매니저
 
     public List<GameObject> _objectList = new List<GameObject>(); // 씬에 있는 게임오브젝트를 가져올 오브젝트 리스트 
     private Dictionary<string, GameObject> _prefabDic = new Dictionary<string, GameObject>(); // 오브젝트를 이름으로 받아올 딕셔너리
 
-    private List<ARTrackedImage> _trackedImg = new List<ARTrackedImage>(); // 트래킹하고있는 이미지
-    private List<float> _trackedTime = new List<float>(); // 트래킹하고있는 이미지의 타이머
-    private List<AnimationController> _animators = new List<AnimationController>(); // 트래킹하고있는 이미지의 Animator
+    private List<ARTrackedImage> _trackedImg = new List<ARTrackedImage>(); // 트래킹중인 이미지
+    private List<float> _trackedTime = new List<float>(); // 트래킹중인 이미지의 타이머
+    private List<AnimationController> _animators = new List<AnimationController>(); // 트래킹중인 이미지의 Animator
 
-    public float timer; // 이미지를 트래킹하지 못할때 증가할 타이머    
+    public float timer; // 이미지를 트래킹하지 못할때 증가할 타이머
 
     private bool isJumping = false; // 점프 상태일땐 위치 갱신을 잠시 멈춤
 
     [SerializeField] GameObject buttons;
+    [SerializeField] GameObject texts;
 
     private void Awake()
     {
@@ -30,22 +30,37 @@ public class ImageTracker : MonoBehaviour
 
             _prefabDic.Add(tName, obj); // 시작할 때 딕셔너리에 오브젝트의 이름을 키값으로 받아옴
             Debug.Log($"{tName} 이름의 오브젝트 준비 완료");
-        } 
+        }
     }
 
     private void Update()
     {
-        ImageRemoved(); // 트래킹하지 못할 때 프리팹 비활성화
-
-        if(_trackedImg.Count > 0)
+        ImageRemoved(); // 트래킹하지 못할 때 오브젝트 비활성화
+        
+        if (_trackedImg.Count > 0) // 트래킹중인 이미지가 있으면
         {
-            buttons.SetActive(true); // 트래킹 중일때만 버튼UI 보기
+            buttons.SetActive(true); // 버튼 UI 보기
+            texts.SetActive(false);
         }
         else
         {
-            buttons.SetActive(false);
+            buttons.SetActive(false); // 트래킹중이 아닐땐 숨기기
+            texts.SetActive(true);
         }
-
+        /*
+        for (int i = 0; i < _trackedImg.Count; i++) // 트래킹 중일때만 버튼 UI 보기
+        {
+            // 트래킹 상태가 Limited 이면 (이미지를 못찾고있으면)
+            if (_trackedImg[i].trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Limited)
+            {
+                buttons.SetActive(false);
+            }
+            else // 잘 트래킹중이면 활성화
+            {
+                buttons.SetActive(true);
+            }
+        }
+        */
     }
     
     private void OnEnable()
@@ -113,7 +128,7 @@ public class ImageTracker : MonoBehaviour
 
             for (int i = 0; i < _trackedImg.Count; i++)
             {
-                // 트래킹 상태가 Limited 이면 (이미지를 못찾고있으면)
+                // 트래킹중인 이미지의 상태가 Limited 이면 (이미지를 못찾고있으면)
                 if (_trackedImg[i].trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Limited)
                 {
                     if (_trackedTime[i] > timer) // 트래킹 타이머가 지정된 타이머보다 커지면 제거
@@ -121,7 +136,6 @@ public class ImageTracker : MonoBehaviour
                         string name = _trackedImg[i].referenceImage.name; // 트래킹하고있는 이미지의 이름을 받아옴
                         GameObject tObj = _prefabDic[name]; // 오브젝트와 연동해서
                         tObj.SetActive(false); // 오브젝트를 비활성화
-                        _animators.RemoveAt(i); // animator도 삭제
                         tNumList.Add(_trackedImg[i]); // 임시 리스트에 추가
                     }
                     else
@@ -138,6 +152,7 @@ public class ImageTracker : MonoBehaviour
                     int num = _trackedImg.IndexOf(tNumList[i]); // 임시 리스트에 추가된 trackedImg의 인덱스 값 받아옴
                     _trackedImg.Remove(_trackedImg[num]); // 오브젝트를 비활성화하고 trackedImg의 리스트에서도 삭제
                     _trackedTime.Remove(_trackedTime[num]); // 오브젝트를 비활성화하고 trackedTime의 리스트에서도 삭제
+                    _animators.Remove(_animators[num]); // 오브젝트를 비활성화하고 animator 리스트 삭제
                     Debug.Log($"{num} 오브젝트 비활성화됨 ");
                 }
             }
